@@ -1,0 +1,24 @@
+hakam_multi_tenancy:
+  tenant_database_className:  App\Entity\Main\TenantDbConfig
+  tenant_database_identifier: id
+
+  tenant_connection:
+    host: 127.0.0.1
+    port: 5432
+    driver: pdo_pgsql
+    charset: utf8
+    server_version: 16
+    user: app
+    password: app
+
+  tenant_migration:
+    tenant_migration_namespace: DoctrineMigrations\Tenant
+    tenant_migration_path: migrations/Tenant
+
+  tenant_entity_manager:
+    tenant_naming_strategy: doctrine.orm.naming_strategy.underscore_number_aware
+    mapping:
+      type: attribute
+      dir: '%kernel.project_dir%/src/Entity/Tenant'
+      prefix: App\Entity\Tenant
+      alias: Tenant
