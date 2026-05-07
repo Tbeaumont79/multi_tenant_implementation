@@ -1,0 +1,79 @@
+parameters:
+	ignoreErrors:
+		-
+			message: '#^Property App\\DataFixtures\\Main\\EstablishmentFixtures\:\:\$establishments has no type specified\.$#'
+			identifier: missingType.property
+			count: 1
+			path: src/DataFixtures/Main/EstablishmentFixtures.php
+
+		-
+			message: '#^Property App\\DataFixtures\\Main\\TenantDbConfigFixtures\:\:\$tenantConfigs has no type specified\.$#'
+			identifier: missingType.property
+			count: 1
+			path: src/DataFixtures/Main/TenantDbConfigFixtures.php
+
+		-
+			message: '#^Property App\\DataFixtures\\Main\\UserFixtures\:\:\$users has no type specified\.$#'
+			identifier: missingType.property
+			count: 1
+			path: src/DataFixtures/Main/UserFixtures.php
+
+		-
+			message: '#^Call to an undefined method Doctrine\\Persistence\\ObjectManager\:\:getConnection\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: src/DataFixtures/Tenant/PatientFixtures.php
+
+		-
+			message: '#^Property App\\Entity\\Main\\Establishment\:\:\$address type mapping mismatch\: property can contain string\|null but database expects string\.$#'
+			identifier: doctrine.columnType
+			count: 1
+			path: src/Entity/Main/Establishment.php
+
+		-
+			message: '#^Property App\\Entity\\Main\\Establishment\:\:\$name type mapping mismatch\: property can contain string\|null but database expects string\.$#'
+			identifier: doctrine.columnType
+			count: 1
+			path: src/Entity/Main/Establishment.php
+
+		-
+			message: '#^Property App\\Entity\\Main\\Establishment\:\:\$tenantId type mapping mismatch\: property can contain int\|null but database expects int\.$#'
+			identifier: doctrine.columnType
+			count: 1
+			path: src/Entity/Main/Establishment.php
+
+		-
+			message: '#^Method App\\Entity\\Main\\TenantDbConfig\:\:getId\(\) should return int but returns int\|null\.$#'
+			identifier: return.type
+			count: 1
+			path: src/Entity/Main/TenantDbConfig.php
+
+		-
+			message: '#^Method App\\Entity\\Main\\User\:\:getUserIdentifier\(\) should return non\-empty\-string but returns string\.$#'
+			identifier: return.type
+			count: 1
+			path: src/Entity/Main/User.php
+
+		-
+			message: '#^Parameter \#2 \$data of function hash expects string, string\|null given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Entity/Main/User.php
+
+		-
+			message: '#^Property App\\Entity\\Main\\User\:\:\$email type mapping mismatch\: property can contain string\|null but database expects string\.$#'
+			identifier: doctrine.columnType
+			count: 1
+			path: src/Entity/Main/User.php
+
+		-
+			message: '#^Property App\\Entity\\Main\\User\:\:\$password type mapping mismatch\: property can contain string\|null but database expects string\.$#'
+			identifier: doctrine.columnType
+			count: 1
+			path: src/Entity/Main/User.php
+
+		-
+			message: '#^Property App\\Entity\\Tenant\\Patient\:\:\$id \(int\|null\) is never assigned int so it can be removed from the property type\.$#'
+			identifier: property.unusedType
+			count: 1
+			path: src/Entity/Tenant/Patient.php

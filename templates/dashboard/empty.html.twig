@@ -1,0 +1,39 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Aucun cabinet · Praxia{% endblock %}
+
+{% block body %}
+<div class="auth">
+    <div class="auth__rail">
+        <a href="{{ path('app_dashboard') }}" class="nav__brand auth__brand">
+            <span class="nav__brand-mark"></span>
+            Andreane<sup>·MD</sup>
+        </a>
+        <div class="auth__intro">
+            <span class="eyebrow">Bienvenue {{ user.email }}</span>
+            <h1 class="auth__title">
+                Aucun cabinet n'est <em class="accent">encore rattaché</em> à votre profil.
+            </h1>
+            <p class="auth__lede">
+                Demandez à votre administrateur d'associer au moins un établissement
+                à votre compte pour commencer à gérer vos patients.
+            </p>
+        </div>
+        <div class="auth__foot">
+            <span>© Andreane · 2026 — Conçu en France</span>
+        </div>
+    </div>
+    <div class="auth__panel">
+        <div class="auth__panel-inner" style="text-align:center; align-items:center; display:flex; flex-direction:column; justify-content:center; gap:1.5rem;">
+            <span class="section-num">§ En attente</span>
+            <p style="max-width:30ch; color:var(--ink-2);">
+                Une fois votre cabinet rattaché, il apparaîtra automatiquement
+                dans cette interface.
+            </p>
+            <a href="{{ path('app_logout') }}" class="btn btn--ghost btn--small">
+                Se déconnecter
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %}

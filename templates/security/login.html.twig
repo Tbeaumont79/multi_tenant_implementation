@@ -1,0 +1,92 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Connexion · Andreane{% endblock %}
+
+{% block body %}
+<div class="auth">
+    <div class="auth__rail">
+        <a href="{{ path('app_login') }}" class="nav__brand auth__brand">
+            <span class="nav__brand-mark"></span>
+            Andreane
+        </a>
+
+        <div class="auth__intro">
+            <span class="eyebrow">Espace praticien · accès sécurisé</span>
+            <h1 class="auth__title">
+                Bienvenue.<br>
+                Vos cabinets <em class="accent">vous attendent</em>.
+            </h1>
+            <p class="auth__lede">
+                Un identifiant unique. Tous vos établissements rattachés.
+                Et la certitude qu'aucun dossier ne se mélange.
+            </p>
+        </div>
+
+        <ul class="auth__assurances">
+            <li><span class="dot"></span>Hébergement HDS · données chiffrées au repos</li>
+            <li><span class="dot"></span>Session JWT signée · révocable côté admin</li>
+            <li><span class="dot"></span>Audit complet de vos accès aux dossiers patient</li>
+        </ul>
+
+        <div class="auth__foot">
+            <span>© Andreane · 2026 — Conçu en France</span>
+        </div>
+    </div>
+
+    <div class="auth__panel">
+        <div class="auth__panel-inner">
+            <span class="section-num">§ Connexion</span>
+            <h2 class="auth__h2">Accéder à mon espace.</h2>
+
+            {% if error %}
+                <div class="alert">
+                    <svg viewBox="0 0 16 16" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.6">
+                        <circle cx="8" cy="8" r="6.5"/>
+                        <path d="M8 5v3.5M8 11v.01"/>
+                    </svg>
+                    <span>{{ error.messageKey|trans(error.messageData, 'security') }}</span>
+                </div>
+            {% endif %}
+
+            <form method="post" class="auth__form" novalidate>
+                <label class="field">
+                    <span class="field__label">Adresse e-mail professionnelle</span>
+                    <input
+                        type="email"
+                        name="_username"
+                        id="username"
+                        value="{{ last_username }}"
+                        autocomplete="email"
+                        required autofocus
+                        placeholder="prenom@cabinet.fr"
+                        class="field__input">
+                </label>
+
+                <label class="field">
+                    <span class="field__label">Mot de passe</span>
+                    <input
+                        type="password"
+                        name="_password"
+                        id="password"
+                        autocomplete="current-password"
+                        required
+                        placeholder="••••••••"
+                        class="field__input">
+                </label>
+
+                <input type="hidden" name="_csrf_token" data-controller="csrf-protection" value="{{ csrf_token('authenticate') }}">
+
+                <button type="submit" class="btn btn--terracotta auth__submit">
+                    Entrer dans l'espace
+                    <svg class="arrow" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 12L12 4M6 4h6v6"/></svg>
+                </button>
+
+                <p class="auth__note">
+                    Première connexion ? Demandez vos accès à
+                    <a href="mailto:hello@andreane.fr">hello@andreane.fr</a>.
+                </p>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

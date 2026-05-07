@@ -6,14 +6,15 @@ namespace App\DataFixtures\Main;
 
 use App\Entity\Main\User;
 use Doctrine\Bundle\FixturesBundle\Fixture;
+use Doctrine\Bundle\FixturesBundle\FixtureGroupInterface;
 use Doctrine\Persistence\ObjectManager;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
-use Doctrine\Bundle\FixturesBundle\FixtureGroupInterface;
 
 class UserFixtures extends Fixture implements FixtureGroupInterface
 {
     private UserPasswordHasherInterface $passwordHasher;
     public const USER_REFERENCE = 'user_';
+
     public function __construct(UserPasswordHasherInterface $passwordHasher)
     {
         $this->passwordHasher = $passwordHasher;
@@ -77,7 +78,7 @@ class UserFixtures extends Fixture implements FixtureGroupInterface
             $hashedPassword = $this->passwordHasher->hashPassword($user, $userData['password']);
             $user->setPassword($hashedPassword);
 
-            $this->addReference(self::USER_REFERENCE . ($index + 1), $user);
+            $this->addReference(self::USER_REFERENCE.($index + 1), $user);
 
             $manager->persist($user);
         }

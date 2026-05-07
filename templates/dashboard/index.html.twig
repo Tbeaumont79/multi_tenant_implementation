@@ -1,0 +1,174 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ activeCabinet.name }} · Andreane{% endblock %}
+
+{% block body %}
+<div class="app">
+    <aside class="app__rail">
+        <a href="{{ path('app_dashboard') }}" class="nav__brand" style="font-size:1.2rem; margin-bottom:2.5rem;">
+            <span class="nav__brand-mark"></span>
+            Andreane
+        </a>
+
+        <div class="rail__section">
+            <h4 class="rail__head">§ Cabinets</h4>
+            <ul class="rail__cabinets">
+                {% for cabinet in cabinets %}
+                    <li>
+                        <a href="{{ path('app_cabinet_switch', {tenantId: cabinet.tenantId}) }}"
+                           class="cabinet-link {{ cabinet.tenantId == activeCabinet.tenantId ? 'is-active' : '' }}">
+                            <span class="cabinet-link__dot"></span>
+                            <span class="cabinet-link__name">{{ cabinet.name }}</span>
+                            <span class="cabinet-link__city">{{ cabinet.address|split(',')[1]|default('')|trim }}</span>
+                        </a>
+                    </li>
+                {% endfor %}
+            </ul>
+        </div>
+
+        <div class="rail__section rail__nav">
+            <h4 class="rail__head">§ Espace</h4>
+            <a class="rail__link is-current" href="#">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M4 12l1.5-1.5L12 4l6.5 6.5L20 12"/><path d="M5 11v9h14v-9"/></svg>
+                Tableau de bord
+            </a>
+            <a class="rail__link" href="#patients">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 4-7 8-7s8 3 8 7"/></svg>
+                Patients <span class="rail__count">{{ patients|length }}</span>
+            </a>
+            <a class="rail__link rail__link--muted" href="#">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="4" y="5" width="16" height="14" rx="2"/><path d="M4 9h16M9 14h6"/></svg>
+                Agenda
+                <span class="rail__soon">soon</span>
+            </a>
+            <a class="rail__link rail__link--muted" href="#">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M12 2v6m0 0l-3-3m3 3l3-3"/><rect x="4" y="10" width="16" height="11" rx="2"/></svg>
+                Documents
+                <span class="rail__soon">soon</span>
+            </a>
+        </div>
+
+        <div class="rail__user">
+            <div class="rail__user-avatar">
+                {{ user.email|first|upper }}{{ user.email|split('@')[0]|slice(1,1)|upper }}
+            </div>
+            <div class="rail__user-meta">
+                <strong>{{ user.email|split('@')[0] }}</strong>
+                <span>{{ user.email }}</span>
+            </div>
+            <a href="{{ path('app_logout') }}" class="rail__logout" title="Déconnexion">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M15 12H4M9 7l-5 5 5 5"/><path d="M14 4h5a1 1 0 0 1 1 1v14a1 1 0 0 1-1 1h-5"/></svg>
+            </a>
+        </div>
+    </aside>
+
+    <main class="app__main">
+        <header class="app__topbar">
+            <div>
+                <span class="section-num">§ Cabinet actif</span>
+                <h1 class="app__h1">
+                    {{ activeCabinet.name }}
+                </h1>
+                <p class="app__sub">{{ activeCabinet.address }}</p>
+            </div>
+            <div class="topbar__cta">
+                <button class="btn btn--ghost btn--small" type="button">
+                    <svg class="arrow" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M8 3v10M3 8h10"/></svg>
+                    Nouveau patient
+                </button>
+                <button class="btn btn--terracotta btn--small" type="button">
+                    Bascule rapide
+                    <svg class="arrow" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 8h8M9 4l4 4-4 4"/></svg>
+                </button>
+            </div>
+        </header>
+
+        <section class="metrics">
+            <article class="metric">
+                <span class="metric__num">{{ patients|length }}</span>
+                <span class="metric__lbl">Patients suivis</span>
+            </article>
+            <article class="metric">
+                <span class="metric__num">{{ cabinets|length }}</span>
+                <span class="metric__lbl">Cabinets accessibles</span>
+            </article>
+            <article class="metric metric--accent">
+                <span class="metric__num">cabinet{{ activeCabinet.tenantId }}</span>
+                <span class="metric__lbl">Base tenant active</span>
+            </article>
+
+        </section>
+
+        <section class="patients" id="patients">
+            <header class="patients__head">
+                <div>
+                    <span class="section-num">§ Patients</span>
+                    <h2 class="patients__h2">
+                        Dossiers du <em>{{ activeCabinet.name }}</em>.
+                    </h2>
+                </div>
+                <div class="patients__filter">
+                    <input type="search" class="field__input field__input--inline" placeholder="Rechercher (nom, NIR…)" id="patient-search">
+                </div>
+            </header>
+
+            {% if patients is empty %}
+                <div class="empty">
+                    <p>Aucun patient enregistré dans ce cabinet pour le moment.</p>
+                </div>
+            {% else %}
+                <table class="patients__table" id="patient-table">
+                    <thead>
+                        <tr>
+                            <th class="th-num">#</th>
+                            <th>Patient</th>
+                            <th>NIR</th>
+                            <th>Né(e) le</th>
+                            <th class="th-end">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for p in patients %}
+                            <tr>
+                                <td class="td-num">{{ '%02d'|format(loop.index) }}</td>
+                                <td>
+                                    <div class="patient-cell">
+                                        <span class="patient-cell__avatar avatar-{{ loop.index % 4 }}">
+                                            {{ p.firstName|first|upper }}{{ p.lastName|first|upper }}
+                                        </span>
+                                        <div>
+                                            <strong>{{ p.firstName }} {{ p.lastName }}</strong>
+                                            <span class="patient-cell__meta">Dossier #{{ '%04d'|format(p.id) }}</span>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td class="td-mono">{{ p.nir|slice(0,1) }} {{ p.nir|slice(1,2) }} {{ p.nir|slice(3,2) }} {{ p.nir|slice(5,2) }} {{ p.nir|slice(7,3) }} {{ p.nir|slice(10,3) }}</td>
+                                <td class="td-date">{{ p.birthDate|date('d/m/Y') }}</td>
+                                <td class="td-end">
+                                    <button class="row-action" type="button" aria-label="Ouvrir">
+                                        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M5 8h7M9 4l4 4-4 4"/></svg>
+                                    </button>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            {% endif %}
+        </section>
+    </main>
+</div>
+
+<script>
+    // Patient search filter
+    const search = document.getElementById('patient-search');
+    const table = document.getElementById('patient-table');
+    if (search && table) {
+        search.addEventListener('input', () => {
+            const q = search.value.toLowerCase();
+            table.querySelectorAll('tbody tr').forEach(tr => {
+                tr.style.display = tr.textContent.toLowerCase().includes(q) ? '' : 'none';
+            });
+        });
+    }
+</script>
+{% endblock %}

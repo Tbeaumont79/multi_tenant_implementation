@@ -6,10 +6,10 @@ namespace App\DataFixtures\Main;
 
 use App\Entity\Main\TenantDbConfig;
 use Doctrine\Bundle\FixturesBundle\Fixture;
+use Doctrine\Bundle\FixturesBundle\FixtureGroupInterface;
 use Doctrine\Persistence\ObjectManager;
 use Hakam\MultiTenancyBundle\Enum\DatabaseStatusEnum;
 use Hakam\MultiTenancyBundle\Enum\DriverTypeEnum;
-use Doctrine\Bundle\FixturesBundle\FixtureGroupInterface;
 
 class TenantDbConfigFixtures extends Fixture implements FixtureGroupInterface
 {
@@ -41,7 +41,7 @@ class TenantDbConfigFixtures extends Fixture implements FixtureGroupInterface
             'dbPassword' => 'app',
             'dbHost' => '127.0.0.1',
             'dbPort' => 5432,
-        ]
+        ],
     ];
 
     public function load(ObjectManager $manager): void

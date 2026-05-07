@@ -1,12 +1,15 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Entity\Tenant;
 
+use ApiPlatform\Metadata\ApiResource;
 use App\Repository\Tenant\PatientRepository;
+use DateTimeInterface;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Hakam\MultiTenancyBundle\Model\TenantEntityInterface;
-use ApiPlatform\Metadata\ApiResource;
 use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: PatientRepository::class)]
@@ -47,7 +50,7 @@ class Patient implements TenantEntityInterface
     #[ORM\Column(type: Types::DATE_MUTABLE)]
     #[Assert\NotNull(message: 'Birth date is required')]
     #[Assert\LessThan('today', message: 'Birth date must be in the past')]
-    private ?\DateTimeInterface $birthDate = null;
+    private ?DateTimeInterface $birthDate = null;
 
     public function getId(): ?int
     {
@@ -62,6 +65,7 @@ class Patient implements TenantEntityInterface
     public function setFirstName(string $firstName): static
     {
         $this->firstName = $firstName;
+
         return $this;
     }
 
@@ -73,6 +77,7 @@ class Patient implements TenantEntityInterface
     public function setLastName(string $lastName): static
     {
         $this->lastName = $lastName;
+
         return $this;
     }
 
@@ -84,22 +89,24 @@ class Patient implements TenantEntityInterface
     public function setNir(string $nir): static
     {
         $this->nir = $nir;
+
         return $this;
     }
 
-    public function getBirthDate(): ?\DateTimeInterface
+    public function getBirthDate(): ?DateTimeInterface
     {
         return $this->birthDate;
     }
 
-    public function setBirthDate(\DateTimeInterface $birthDate): static
+    public function setBirthDate(DateTimeInterface $birthDate): static
     {
         $this->birthDate = $birthDate;
+
         return $this;
     }
 
     public function getFullName(): string
     {
-        return $this->firstName . ' ' . $this->lastName;
+        return $this->firstName.' '.$this->lastName;
     }
 }

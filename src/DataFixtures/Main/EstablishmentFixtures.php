@@ -7,9 +7,9 @@ namespace App\DataFixtures\Main;
 use App\Entity\Main\Establishment;
 use App\Entity\Main\User;
 use Doctrine\Bundle\FixturesBundle\Fixture;
-use Doctrine\Persistence\ObjectManager;
 use Doctrine\Bundle\FixturesBundle\FixtureGroupInterface;
 use Doctrine\Common\DataFixtures\DependentFixtureInterface;
+use Doctrine\Persistence\ObjectManager;
 
 class EstablishmentFixtures extends Fixture implements FixtureGroupInterface, DependentFixtureInterface
 {
@@ -25,7 +25,7 @@ class EstablishmentFixtures extends Fixture implements FixtureGroupInterface, De
             'name' => 'Clinique Saint-Antoine',
             'tenantId' => 2,
             'address' => '456 Avenue Saint-Antoine, 75004 Paris, France',
-            'userIds' => [5],
+            'userIds' => [4],
         ],
         [
             'name' => 'Centre Médical République',
@@ -40,6 +40,7 @@ class EstablishmentFixtures extends Fixture implements FixtureGroupInterface, De
             'userIds' => [8],
         ],
     ];
+
     public function load(ObjectManager $manager): void
     {
         foreach ($this->establishments as $index => $establishment) {
@@ -49,11 +50,11 @@ class EstablishmentFixtures extends Fixture implements FixtureGroupInterface, De
             $newEstablishment->setAddress($establishment['address']);
 
             foreach ($establishment['userIds'] as $userId) {
-                $user = $this->getReference(UserFixtures::USER_REFERENCE . $userId, User::class);
+                $user = $this->getReference(UserFixtures::USER_REFERENCE.$userId, User::class);
                 $user->addEstablishment($newEstablishment);
             }
 
-            $this->addReference(self::ESTABLISHMENT_REFERENCE . ($index + 1), $newEstablishment);
+            $this->addReference(self::ESTABLISHMENT_REFERENCE.($index + 1), $newEstablishment);
             $manager->persist($newEstablishment);
         }
         $manager->flush();

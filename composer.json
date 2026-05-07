@@ -89,6 +89,15 @@
         ],
         "post-update-cmd": [
             "@auto-scripts"
+        ],
+        "test": "phpunit",
+        "stan": "phpstan analyse --memory-limit=1G",
+        "lint": "php-cs-fixer fix --dry-run --diff",
+        "lint:fix": "php-cs-fixer fix",
+        "ci": [
+            "@lint",
+            "@stan",
+            "@test"
         ]
     },
     "conflict": {
@@ -102,6 +111,7 @@
     },
     "require-dev": {
         "doctrine/doctrine-fixtures-bundle": "^4.3",
+        "friendsofphp/php-cs-fixer": "^3.95",
         "phpstan/phpstan": "^2.1",
         "phpstan/phpstan-doctrine": "^2.0",
         "phpstan/phpstan-symfony": "^2.0",
