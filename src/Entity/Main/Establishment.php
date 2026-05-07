@@ -8,14 +8,23 @@ use ApiPlatform\Metadata\ApiResource;
 use App\Repository\Main\EstablishmentRepository;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
+use Symfony\Component\Serializer\Attribute\Groups;
 
 #[ORM\Entity(repositoryClass: EstablishmentRepository::class)]
-#[ApiResource]
+#[
+    ApiResource(
+        security: "is_granted('ROLE_ADMIN')",
+        normalizationContext: ['groups' => ['establishment:read']],
+        denormalizationContext: ['groups' => ['establishment:write']],
+    ),
+]
+
 class Establishment
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
+    #[Groups(['establishment:read'])]
     private ?int $id = null;
 
     #[ORM\Column(length: 100)]
@@ -26,11 +35,13 @@ class Establishment
         minMessage: 'Establishment name must be at least {{ limit }} characters long',
         maxMessage: 'Establishment name cannot be longer than {{ limit }} characters'
     )]
+    #[Groups(['establishment:read', 'establishment:write'])]
     private ?string $name = null;
 
     #[ORM\Column]
     #[Assert\NotBlank(message: 'Tenant ID is required')]
     #[Assert\Positive(message: 'Tenant ID must be a positive integer')]
+    #[Groups(['establishment:read', 'establishment:write'])]
     private ?int $tenantId = null;
 
     #[ORM\Column(length: 500)]
@@ -41,10 +52,12 @@ class Establishment
         minMessage: 'Address must be at least {{ limit }} characters long',
         maxMessage: 'Address cannot be longer than {{ limit }} characters'
     )]
+    #[Groups(['establishment:read', 'establishment:write'])]
     private ?string $address = null;
 
     #[ORM\ManyToOne(inversedBy: 'establishments')]
     #[Assert\NotNull(message: 'User is required')]
+    #[Groups(['establishment:read', 'establishment:write'])]
     private ?User $user = null;
 
     public function getId(): ?int
