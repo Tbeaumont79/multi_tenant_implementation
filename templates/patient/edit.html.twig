@@ -1,0 +1,108 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ patient.fullName }} · {{ activeCabinet.name }}{% endblock %}
+
+{% block body %}
+<div class="app">
+    <aside class="app__rail">
+        <a href="{{ path('app_dashboard') }}" class="nav__brand" style="font-size:1.2rem; margin-bottom:2.5rem;">
+            <span class="nav__brand-mark"></span>
+            Andreane
+        </a>
+
+        <div class="rail__section">
+            <h4 class="rail__head">§ Cabinet actif</h4>
+            <div class="cabinet-link is-active">
+                <span class="cabinet-link__dot"></span>
+                <span class="cabinet-link__name">{{ activeCabinet.name }}</span>
+                <span class="cabinet-link__city">{{ activeCabinet.address|split(',')[1]|default('')|trim }}</span>
+            </div>
+        </div>
+
+        <div class="rail__section rail__nav">
+            <h4 class="rail__head">§ Espace</h4>
+            <a class="rail__link" href="{{ path('app_dashboard') }}">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M4 12l1.5-1.5L12 4l6.5 6.5L20 12"/><path d="M5 11v9h14v-9"/></svg>
+                Tableau de bord
+            </a>
+            <a class="rail__link is-current" href="#">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 4-7 8-7s8 3 8 7"/></svg>
+                Modification dossier
+            </a>
+        </div>
+
+        <div class="rail__user">
+            <div class="rail__user-avatar">
+                {{ app.user.email|first|upper }}{{ app.user.email|split('@')[0]|slice(1,1)|upper }}
+            </div>
+            <div class="rail__user-meta">
+                <strong>{{ app.user.email|split('@')[0] }}</strong>
+                <span>{{ app.user.email }}</span>
+            </div>
+            <a href="{{ path('app_logout') }}" class="rail__logout" title="Déconnexion">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M15 12H4M9 7l-5 5 5 5"/><path d="M14 4h5a1 1 0 0 1 1 1v14a1 1 0 0 1-1 1h-5"/></svg>
+            </a>
+        </div>
+    </aside>
+
+    <main class="app__main">
+        <header class="app__topbar">
+            <div>
+                <span class="section-num">§ Modification dossier #{{ '%04d'|format(patient.id) }}</span>
+                <h1 class="app__h1">
+                    {{ patient.fullName }}
+                </h1>
+                <p class="app__sub">Cabinet « {{ activeCabinet.name }} ».</p>
+            </div>
+            <div class="topbar__cta">
+                <a class="btn btn--ghost btn--small" href="{{ path('app_dashboard') }}">
+                    <svg class="arrow" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M12 8H4M7 4L3 8l4 4"/></svg>
+                    Retour
+                </a>
+            </div>
+        </header>
+
+        <section class="patients" style="max-width: 640px;">
+            <header class="patients__head">
+                <div>
+                    <span class="section-num">§ Identité patient</span>
+                    <h2 class="patients__h2">
+                        Mettez à jour les <em>informations</em> du dossier.
+                    </h2>
+                </div>
+            </header>
+
+            {{ form_start(form, {attr: {class: 'auth__form', novalidate: 'novalidate'}}) }}
+                <label class="field">
+                    <span class="field__label">Prénom</span>
+                    {{ form_widget(form.firstName, {attr: {class: 'field__input'}}) }}
+                    {{ form_errors(form.firstName) }}
+                </label>
+
+                <label class="field">
+                    <span class="field__label">Nom</span>
+                    {{ form_widget(form.lastName, {attr: {class: 'field__input'}}) }}
+                    {{ form_errors(form.lastName) }}
+                </label>
+
+                <label class="field">
+                    <span class="field__label">NIR (15 chiffres)</span>
+                    {{ form_widget(form.nir, {attr: {class: 'field__input'}}) }}
+                    {{ form_errors(form.nir) }}
+                </label>
+
+                <label class="field">
+                    <span class="field__label">Date de naissance</span>
+                    {{ form_widget(form.birthDate, {attr: {class: 'field__input'}}) }}
+                    {{ form_errors(form.birthDate) }}
+                </label>
+
+                <button type="submit" class="btn btn--terracotta auth__submit">
+                    Enregistrer les modifications
+                    <svg class="arrow" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 8h8M9 4l4 4-4 4"/></svg>
+                </button>
+            {{ form_end(form) }}
+        </section>
+    </main>
+</div>
+{% endblock %}

@@ -72,16 +72,26 @@
                 <p class="app__sub">{{ activeCabinet.address }}</p>
             </div>
             <div class="topbar__cta">
-                <button class="btn btn--ghost btn--small" type="button">
+                <a class="btn btn--ghost btn--small" href="{{ path('app_patient_new') }}">
                     <svg class="arrow" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M8 3v10M3 8h10"/></svg>
                     Nouveau patient
-                </button>
-                <button class="btn btn--terracotta btn--small" type="button">
-                    Bascule rapide
-                    <svg class="arrow" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 8h8M9 4l4 4-4 4"/></svg>
-                </button>
+                </a>
+                {% if nextCabinet %}
+                    <a class="btn btn--terracotta btn--small" href="{{ path('app_cabinet_switch', {tenantId: nextCabinet.tenantId}) }}" title="Basculer vers {{ nextCabinet.name }}">
+                        Bascule rapide {{ nextCabinet.name }}
+                        <svg class="arrow" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 8h8M9 4l4 4-4 4"/></svg>
+                    </a>
+                {% endif %}
             </div>
         </header>
+
+        {% for label, messages in app.flashes %}
+            {% for message in messages %}
+                <div class="alert alert--{{ label }}" style="margin-top: 1rem; color: {{ label == 'success' ? '#6FAF4F' : '#C44A3A' }}; padding: 1rem 1.5rem; margin-bottom: 1rem; background: {{ label == 'success' ? '#e8f5e9' : '#ffebee' }}; border-radius: 8px;">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        {% endfor %}
 
         <section class="metrics">
             <article class="metric">
@@ -145,9 +155,17 @@
                                 <td class="td-mono">{{ p.nir|slice(0,1) }} {{ p.nir|slice(1,2) }} {{ p.nir|slice(3,2) }} {{ p.nir|slice(5,2) }} {{ p.nir|slice(7,3) }} {{ p.nir|slice(10,3) }}</td>
                                 <td class="td-date">{{ p.birthDate|date('d/m/Y') }}</td>
                                 <td class="td-end">
-                                    <button class="row-action" type="button" aria-label="Ouvrir">
-                                        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M5 8h7M9 4l4 4-4 4"/></svg>
-                                    </button>
+                                    <div style="display:inline-flex; gap:0.4rem;">
+                                        <a class="row-action" href="{{ path('app_patient_edit', {id: p.id}) }}" aria-label="Modifier" title="Modifier">
+                                            <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M11.5 2.5l2 2-7.5 7.5H4v-2z"/></svg>
+                                        </a>
+                                        <form method="post" action="{{ path('app_patient_delete', {id: p.id}) }}" onsubmit="return confirm('Supprimer le dossier de {{ p.fullName|e('js') }} ?');" style="display:inline;">
+                                            <input type="hidden" name="_token" value="{{ csrf_token('delete-patient-' ~ p.id) }}">
+                                            <button class="row-action" type="submit" aria-label="Supprimer" title="Supprimer">
+                                                <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M3 4h10M6 4V2.5h4V4M5 4l1 9h4l1-9"/></svg>
+                                            </button>
+                                        </form>
+                                    </div>
                                 </td>
                             </tr>
                         {% endfor %}

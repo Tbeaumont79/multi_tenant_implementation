@@ -5,14 +5,12 @@ declare(strict_types=1);
 namespace App\Controller;
 
 use App\Entity\Main\Establishment;
-use App\Entity\Main\TenantDbConfig;
 use App\Entity\Main\User;
 use App\Entity\Tenant\Patient;
 use App\Security\Voter\EstablishmentVoter;
+use App\Service\Tenant\TenantSwitcher;
 use Doctrine\ORM\EntityManagerInterface;
 use Hakam\MultiTenancyBundle\Doctrine\ORM\TenantEntityManager;
-use Hakam\MultiTenancyBundle\Event\SwitchDbEvent;
-use Psr\EventDispatcher\EventDispatcherInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -26,7 +24,7 @@ class DashboardController extends AbstractController
     public function __construct(
         private readonly EntityManagerInterface $em,
         private readonly TenantEntityManager $tenantEm,
-        private readonly EventDispatcherInterface $events,
+        private readonly TenantSwitcher $switcher,
     ) {
     }
 
@@ -60,23 +58,29 @@ class DashboardController extends AbstractController
             $session->set(self::SESSION_CABINET_KEY, $activeCabinet->getTenantId());
         }
 
-        $tenantConfig = $this->em->getRepository(TenantDbConfig::class)
-            ->findOneBy(['dbName' => 'cabinet'.$activeCabinet->getTenantId()]);
+        $this->switcher->switchTo(
+            $user,
+            $activeCabinet->getTenantId() ?? throw new \LogicException('Active cabinet has no tenantId.'),
+        );
 
-        $patients = [];
-        if (null !== $tenantConfig) {
-            $this->events->dispatch(new SwitchDbEvent((string) $tenantConfig->getId()));
-            $patients = $this->tenantEm
-                ->getRepository(Patient::class)
-                ->findBy([], ['lastName' => 'ASC']);
+        $patients = $this->tenantEm
+            ->getRepository(Patient::class)
+            ->findBy([], ['lastName' => 'ASC']);
+
+        // Bascule rapide : pointe vers le cabinet suivant dans la rotation.
+        $nextCabinet = null;
+        if (count($cabinets) > 1) {
+            $activeIndex = array_search($activeCabinet, $cabinets, true);
+            $nextIndex = (false === $activeIndex ? 0 : $activeIndex + 1) % count($cabinets);
+            $nextCabinet = $cabinets[$nextIndex];
         }
 
         return $this->render('dashboard/index.html.twig', [
             'user' => $user,
             'cabinets' => $cabinets,
             'activeCabinet' => $activeCabinet,
+            'nextCabinet' => $nextCabinet,
             'patients' => $patients,
-            'tenantConfig' => $tenantConfig,
         ]);
     }
 
