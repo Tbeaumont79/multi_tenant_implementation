@@ -1,0 +1,64 @@
+/* =====================================================================
+   Buttons
+   ===================================================================== */
+
+.btn {
+    --bg: var(--ink);
+    --fg: var(--paper);
+    --bd: var(--ink);
+    display: inline-flex;
+    align-items: center;
+    gap: 0.55rem;
+    padding: 0.85rem 1.25rem;
+    background: var(--bg);
+    color: var(--fg);
+    border: 1px solid var(--bd);
+    border-radius: 999px;
+    font-family: var(--body);
+    font-weight: 600;
+    font-size: 0.92rem;
+    letter-spacing: 0.005em;
+    cursor: pointer;
+    transition:
+        transform 0.35s var(--ease),
+        background 0.3s var(--ease),
+        color 0.3s var(--ease);
+    will-change: transform;
+}
+.btn:hover {
+    transform: translateY(-1px);
+}
+.btn .arrow {
+    width: 1.05em;
+    height: 1.05em;
+    transition: transform 0.35s var(--ease);
+}
+.btn:hover .arrow {
+    transform: translate(2px, -2px);
+}
+
+.btn--ghost {
+    --bg: transparent;
+    --fg: var(--ink);
+    --bd: var(--ink);
+}
+.btn--ghost:hover {
+    --bg: var(--ink);
+    --fg: var(--paper);
+}
+
+.btn--terracotta {
+    --bg: var(--terracotta);
+    --fg: var(--paper);
+    --bd: var(--terracotta);
+}
+.btn--terracotta:hover {
+    --bg: var(--terracotta-2);
+    --bd: var(--terracotta-2);
+}
+
+.btn--small {
+    padding: 0.55rem 0.95rem;
+    font-size: 0.85rem;
+}
+

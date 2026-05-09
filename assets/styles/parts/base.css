@@ -1,0 +1,136 @@
+/* =====================================================================
+   Praxia — design system
+   Inspired by the calm/clinical French B2B medical aesthetic.
+   ===================================================================== */
+
+:root {
+    /* Cream-led palette */
+    --paper: #f5f1e8; /* warm cream base */
+    --paper-2: #ede7d6; /* deeper sand for cards */
+    --paper-3: #e2d9c2; /* sand divider */
+    --ink: #0e1f2a; /* near-black navy */
+    --ink-2: #2a3b47; /* secondary text */
+    --ink-3: #6b7986; /* muted */
+    --line: #c8bea5; /* thin rule */
+
+    /* Brand accents */
+    --teal: #0f5d52; /* deep clinical teal */
+    --teal-2: #1a8a78; /* mid teal */
+    --mint: #b8ddd0; /* pastel mint */
+    --terracotta: #c9543c; /* warm CTA */
+    --terracotta-2: #e0735c;
+    --honey: #e8b547; /* highlight pop */
+
+    /* Type */
+    --display: "Bricolage Grotesque", ui-sans-serif, system-ui, sans-serif;
+    --body: "Manrope", ui-sans-serif, system-ui, sans-serif;
+    --mono: "JetBrains Mono", ui-monospace, monospace;
+
+    /* Spacing rhythm */
+    --gutter: clamp(1.25rem, 2vw, 2rem);
+    --rail: clamp(2rem, 6vw, 7rem);
+
+    /* Motion */
+    --ease: cubic-bezier(0.2, 0.7, 0.15, 1);
+}
+
+* {
+    box-sizing: border-box;
+}
+
+html,
+body {
+    margin: 0;
+    padding: 0;
+    background: var(--paper);
+    color: var(--ink);
+    font-family: var(--body);
+    font-size: 16px;
+    line-height: 1.55;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+}
+
+body {
+    background-image:
+        radial-gradient(
+            1200px 600px at 85% -10%,
+            rgba(184, 221, 208, 0.35),
+            transparent 60%
+        ),
+        radial-gradient(
+            900px 500px at -10% 110%,
+            rgba(232, 181, 71, 0.18),
+            transparent 65%
+        );
+}
+
+img {
+    max-width: 100%;
+    display: block;
+}
+
+a {
+    color: inherit;
+    text-decoration: none;
+}
+
+::selection {
+    background: var(--ink);
+    color: var(--paper);
+}
+
+/* Type scale */
+.display {
+    font-family: var(--display);
+    font-weight: 500;
+    letter-spacing: -0.02em;
+    line-height: 1.02;
+    font-size: clamp(2.6rem, 6.5vw, 6rem);
+    font-variation-settings:
+        "wdth" 105,
+        "opsz" 96;
+}
+
+.eyebrow {
+    font-family: var(--display);
+    font-size: 0.78rem;
+    text-transform: uppercase;
+    letter-spacing: 0.22em;
+    font-weight: 500;
+    color: var(--ink-2);
+    display: inline-flex;
+    align-items: center;
+    gap: 0.7rem;
+}
+.eyebrow::before {
+    content: "";
+    width: 1.6rem;
+    height: 1px;
+    background: var(--ink-2);
+    display: inline-block;
+}
+
+.section-num {
+    font-family: var(--mono);
+    font-size: 0.72rem;
+    letter-spacing: 0.18em;
+    color: var(--ink-3);
+}
+
+h1,
+h2,
+h3 {
+    font-family: var(--display);
+    color: var(--ink);
+    margin: 0;
+    font-weight: 500;
+    letter-spacing: -0.018em;
+}
+
+p {
+    margin: 0;
+    max-width: 60ch;
+}
+

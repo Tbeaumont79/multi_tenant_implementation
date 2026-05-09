@@ -1,0 +1,88 @@
+/* =====================================================================
+   Shell layout
+   ===================================================================== */
+
+.shell {
+    max-width: 1320px;
+    margin: 0 auto;
+    padding: 0 var(--rail);
+}
+
+.thinrule {
+    height: 1px;
+    background: var(--line);
+    border: 0;
+    margin: 0;
+}
+
+/* =====================================================================
+   Top navigation
+   ===================================================================== */
+
+.nav {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1.5rem 0 1.25rem;
+    gap: 2rem;
+}
+
+.nav__brand {
+    display: inline-flex;
+    align-items: baseline;
+    gap: 0.6rem;
+    font-family: var(--display);
+    font-weight: 600;
+    font-size: 1.35rem;
+    letter-spacing: -0.02em;
+}
+.nav__brand-mark {
+    display: inline-block;
+    width: 11px;
+    height: 11px;
+    border-radius: 999px;
+    background: var(--terracotta);
+    box-shadow:
+        0 0 0 4px var(--paper),
+        0 0 0 5px var(--terracotta);
+    transform: translateY(-1px);
+}
+.nav__brand sup {
+    font-family: var(--mono);
+    font-size: 0.62rem;
+    color: var(--ink-3);
+    margin-left: 0.1rem;
+    font-weight: 500;
+    letter-spacing: 0.1em;
+}
+
+.nav__links {
+    display: flex;
+    gap: 2.2rem;
+    font-size: 0.92rem;
+    color: var(--ink-2);
+}
+.nav__links a {
+    position: relative;
+    padding: 0.3rem 0;
+}
+.nav__links a::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    bottom: -2px;
+    width: 0;
+    height: 1px;
+    background: var(--ink);
+    transition: width 0.35s var(--ease);
+}
+.nav__links a:hover::after {
+    width: 100%;
+}
+
+.nav__cta {
+    display: flex;
+    gap: 0.6rem;
+    align-items: center;
+}
+
