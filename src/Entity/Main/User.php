@@ -41,9 +41,12 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     /**
      * @var list<string> The user roles
+     *
+     * Intentionally NOT in 'user:write' — prevents privilege escalation via
+     * PATCH /api/users/{id}. Role changes go through EasyAdmin /admin/user.
      */
     #[ORM\Column]
-    #[Groups(['user:read', 'user:write'])]
+    #[Groups(['user:read'])]
     private array $roles = [];
 
     /**
