@@ -22,9 +22,7 @@ final class TenantIsolationTest extends WebTestCase
     #[Test]
     public function twig_user_cannot_switch_to_cabinet_they_dont_own(): void
     {
-        $em = static::getContainer()->get(EntityManagerInterface::class);
-        $emma = $em->getRepository(User::class)->findOneBy(['email' => 'emma@hotmail.com']);
-        $this->client->loginUser($emma);
+        $this->client->loginUser($this->loadUser('emma@hotmail.com'));
 
         // emma owns cabinets 1 & 2; cabinet 3 belongs to lucas
         $this->client->request('GET', '/app/cabinet/3');
@@ -35,9 +33,7 @@ final class TenantIsolationTest extends WebTestCase
     #[Test]
     public function twig_user_can_switch_to_their_own_cabinet(): void
     {
-        $em = static::getContainer()->get(EntityManagerInterface::class);
-        $emma = $em->getRepository(User::class)->findOneBy(['email' => 'emma@hotmail.com']);
-        $this->client->loginUser($emma);
+        $this->client->loginUser($this->loadUser('emma@hotmail.com'));
 
         $this->client->request('GET', '/app/cabinet/1');
 
@@ -76,9 +72,18 @@ final class TenantIsolationTest extends WebTestCase
         );
 
         self::assertResponseIsSuccessful();
-        $payload = json_decode($this->client->getResponse()->getContent(), true);
+        $payload = $this->decodeJsonResponse();
         self::assertArrayHasKey('member', $payload);
         self::assertGreaterThan(0, $payload['totalItems']);
+    }
+
+    private function loadUser(string $email): User
+    {
+        $em = static::getContainer()->get(EntityManagerInterface::class);
+        $user = $em->getRepository(User::class)->findOneBy(['email' => $email]);
+        self::assertNotNull($user, sprintf('Test fixture user "%s" missing.', $email));
+
+        return $user;
     }
 
     private function getJwtToken(string $email, string $password): string
@@ -87,11 +92,22 @@ final class TenantIsolationTest extends WebTestCase
             'POST',
             '/api/login',
             server: ['CONTENT_TYPE' => 'application/json'],
-            content: json_encode(['email' => $email, 'password' => $password]),
+            content: json_encode(['email' => $email, 'password' => $password], JSON_THROW_ON_ERROR),
         );
         self::assertResponseIsSuccessful();
-        $payload = json_decode($this->client->getResponse()->getContent(), true);
+        $payload = $this->decodeJsonResponse();
 
         return $payload['token'];
+    }
+
+    /**
+     * @return array<string, mixed>
+     */
+    private function decodeJsonResponse(): array
+    {
+        $content = $this->client->getResponse()->getContent();
+        self::assertNotFalse($content);
+
+        return json_decode($content, true, flags: JSON_THROW_ON_ERROR);
     }
 }
