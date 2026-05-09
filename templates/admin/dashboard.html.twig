@@ -1,6 +1,96 @@
-{# templates/admin/my_dashboard.html.twig #}
 {% extends '@EasyAdmin/layout.html.twig' %}
 
+{% block content_title %}Vue d'ensemble{% endblock %}
+
 {% block main %}
-    {# ... #}
-{% endblock main %}
+<style>
+    .ea-dashboard-cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1.25rem; margin-bottom: 2rem; }
+    .ea-card { background: #fff; border: 1px solid #e5e7eb; border-radius: 10px; padding: 1.25rem 1.5rem; box-shadow: 0 1px 2px rgba(0,0,0,.04); }
+    .ea-card__label { color: #111827; font-size: .8rem; text-transform: uppercase; letter-spacing: .04em; margin: 0 0 .5rem; }
+    .ea-card__num { font-size: 2.25rem; font-weight: 700; line-height: 1; color: #111827; }
+    .ea-card__hint { color: #111827; font-size: .8rem; margin-top: .35rem; }
+    .ea-quick { display: flex; gap: .75rem; margin-bottom: 2rem; flex-wrap: wrap; }
+    .ea-quick a { background: #111827; color: #fff; padding: .6rem 1.1rem; border-radius: 8px; text-decoration: none; font-weight: 500; font-size: .9rem; transition: opacity .2s; }
+    .ea-quick a:hover { opacity: .85; }
+    .ea-quick a.secondary { background: #fff; color: #111827; border: 1px solid #e5e7eb; }
+    .ea-table { width: 100%; background: #fff; border: 1px solid #e5e7eb; border-radius: 10px; overflow: hidden; border-collapse: collapse; }
+    .ea-table th { background: #f9fafb; text-align: left; padding: .75rem 1rem; font-size: .75rem; text-transform: uppercase; letter-spacing: .04em; color: #111827; border-bottom: 1px solid #e5e7eb; }
+    .ea-table td { padding: .85rem 1rem; border-bottom: 1px solid #f3f4f6; font-size: .9rem; }
+    .ea-table tr:last-child td { border-bottom: 0; }
+    .ea-pill { display: inline-block; padding: .15rem .55rem; border-radius: 999px; font-size: .72rem; font-weight: 600; }
+    .ea-pill--ok { background: #d1fae5; color: #065f46; }
+    .ea-pill--warn { background: #fee2e2; color: #991b1b; }
+    .ea-pill--info { background: #dbeafe; color: #1e40af; }
+    .ea-mono { font-family: ui-monospace, SFMono-Regular, monospace; font-size: .85rem; color: #6b7280; }
+</style>
+
+<h1 style="margin: 0 0 .25rem; font-size: 1.75rem;">Bienvenue, {{ app.user.email|split('@')[0] }}.</h1>
+<p style="color: #6b7280; margin: 0 0 2rem;">Console d'administration — multi-tenant medical SaaS.</p>
+
+<div class="ea-dashboard-cards">
+    <div class="ea-card">
+        <p class="ea-card__label">Cabinets</p>
+        <div class="ea-card__num">{{ totalCabinets }}</div>
+        <p class="ea-card__hint">{{ totalConfigs }} bases tenant configurées</p>
+    </div>
+    <div class="ea-card">
+        <p class="ea-card__label">Utilisateurs</p>
+        <div class="ea-card__num">{{ totalUsers }}</div>
+        <p class="ea-card__hint">dont {{ adminCount }} admin{{ adminCount > 1 ? 's' : '' }}</p>
+    </div>
+    <div class="ea-card ea-card">
+        <p class="ea-card__label">Bases tenant</p>
+        <div class="ea-card__num">{{ totalConfigs }}</div>
+        <p class="ea-card__hint">isolation database-per-tenant</p>
+    </div>
+    <div class="ea-card">
+        <p class="ea-card__label">Stack</p>
+        <div class="ea-card__num" style="font-size: 1rem; line-height: 1.4;">Sf 7.4 · PHP 8.4<br>PG 16</div>
+        <p class="ea-card__hint">Hakam multi-tenancy</p>
+    </div>
+</div>
+
+<div class="ea-quick">
+    <a href="{{ path('admin_establishment_new') }}">+ Nouveau cabinet</a>
+    <a href="{{ path('admin_user_new') }}" class="secondary">+ Nouvel utilisateur</a>
+</div>
+
+<h2 style="font-size: 1.1rem; margin: 0 0 .75rem;">Cabinets enregistrés</h2>
+
+{% if cabinets is empty %}
+    <p style="color: #6b7280;">Aucun cabinet enregistré pour l'instant.</p>
+{% else %}
+    <table class="ea-table">
+        <thead>
+            <tr>
+                <th>Tenant ID</th>
+                <th>Nom</th>
+                <th>Propriétaire</th>
+                <th>Adresse</th>
+                <th>Base</th>
+                <th>Statut DB</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for c in cabinets %}
+                <tr>
+                    <td style="color: #6b7280;"><strong>#{{ c.tenantId }}</strong></td>
+                    <td style="color: #6b7280;">{{ c.name }}</td>
+                    <td style="color: #6b7280;">{{ c.owner }}</td>
+                    <td style="color: #6b7280;">{{ c.address }}</td>
+                    <td class="ea-mono">{{ c.dbName }}</td>
+                    <td>
+                        {% if c.dbStatus.value == 'database_migrated' %}
+                            <span class="ea-pill ea-pill--ok">migrated</span>
+                        {% elseif c.dbStatus.value == 'database_created' %}
+                            <span class="ea-pill ea-pill--info">created</span>
+                        {% else %}
+                            <span class="ea-pill ea-pill--warn">{{ c.dbStatus.value }}</span>
+                        {% endif %}
+                    </td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% endif %}
+{% endblock %}

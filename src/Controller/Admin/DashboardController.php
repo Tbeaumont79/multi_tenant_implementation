@@ -4,35 +4,63 @@ declare(strict_types=1);
 
 namespace App\Controller\Admin;
 
+use App\Entity\Main\Establishment;
+use App\Entity\Main\TenantDbConfig;
+use App\Entity\Main\User;
+use Doctrine\ORM\EntityManagerInterface;
 use EasyCorp\Bundle\EasyAdminBundle\Attribute\AdminDashboard;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Dashboard;
 use EasyCorp\Bundle\EasyAdminBundle\Config\MenuItem;
 use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractDashboardController;
+use Hakam\MultiTenancyBundle\Enum\DatabaseStatusEnum;
 use Symfony\Component\HttpFoundation\Response;
-use App\Controller\Admin\EstablishmentCrudController;
-use App\Controller\Admin\UserCrudController;
-
 
 #[AdminDashboard(routePath: '/admin', routeName: 'admin')]
 class DashboardController extends AbstractDashboardController
 {
+    public function __construct(
+        private readonly EntityManagerInterface $em,
+    ) {}
+
     public function index(): Response
     {
+        $userRepo = $this->em->getRepository(User::class);
+        $estabRepo = $this->em->getRepository(Establishment::class);
+        $configRepo = $this->em->getRepository(TenantDbConfig::class);
 
-        // Option 1. You can make your dashboard redirect to some common page of your backend
-        //
-        // return $this->redirectToRoute('admin_user_index');
+        $totalUsers = $userRepo->count([]);
+        $totalCabinets = $estabRepo->count([]);
+        $totalConfigs = $configRepo->count([]);
 
-        // Option 2. You can make your dashboard redirect to different pages depending on the user
-        //
-        // if ('jane' === $this->getUser()->getUsername()) {
-        //     return $this->redirectToRoute('...');
-        // }
+        // Admins : on filtre côté PHP car roles est un JSON array dans Postgres
+        $adminCount = 0;
+        foreach ($userRepo->findAll() as $u) {
+            if (in_array('ROLE_ADMIN', $u->getRoles(), true)) {
+                ++$adminCount;
+            }
+        }
 
-        // Option 3. You can render some custom template to display a proper dashboard with widgets, etc.
-        // (tip: it's easier if your template extends from @EasyAdmin/page/content.html.twig)
-        //
-        return $this->render('admin/dashboard.html.twig');
+        // Cabinets enrichis : nom + owner + status DB
+        $cabinets = [];
+        foreach ($estabRepo->findBy([], ['id' => 'ASC']) as $cabinet) {
+            $config = $configRepo->findOneBy(['dbName' => 'cabinet'.$cabinet->getTenantId()]);
+            $cabinets[] = [
+                'name' => $cabinet->getName(),
+                'tenantId' => $cabinet->getTenantId(),
+                'address' => $cabinet->getAddress(),
+                'owner' => $cabinet->getUser()?->getEmail() ?? '—',
+                'dbStatus' => $config?->getDatabaseStatus() ?? DatabaseStatusEnum::DATABASE_NOT_CREATED,
+                'dbName' => $config?->getDbName() ?? '—',
+            ];
+        }
+
+        return $this->render('admin/dashboard.html.twig', [
+            'totalUsers' => $totalUsers,
+            'totalCabinets' => $totalCabinets,
+            'totalConfigs' => $totalConfigs,
+            'adminCount' => $adminCount,
+            'cabinets' => $cabinets,
+        ]);
     }
 
     public function configureDashboard(): Dashboard
