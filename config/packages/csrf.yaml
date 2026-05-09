@@ -6,6 +6,6 @@ framework:
 
     csrf_protection:
         stateless_token_ids:
-            - submit
+            # - submit  # session-based: Symfony Forms (EasyAdmin) need this
             - authenticate
             - logout
