@@ -10,8 +10,11 @@ help: ## Show this help.
 	     /^##@/ { printf "\n\033[1m%s\033[0m\n", substr($$0, 5) } \
 	     /^[a-zA-Z_-]+:.*?##/ { printf "  \033[36m%-18s\033[0m %s\n", $$1, $$2 }' $(MAKEFILE_LIST)
 
-install: ## Install composer deps + generate JWT keypair.
-	$(COMPOSER) install
+install: ## Install composer deps, warm cache, install assets/importmap, generate JWT keypair.
+	$(COMPOSER) install --no-scripts
+	$(CONSOLE) cache:clear
+	$(CONSOLE) assets:install public --symlink --relative
+	$(CONSOLE) importmap:install
 	$(CONSOLE) lexik:jwt:generate-keypair --skip-if-exists
 
 jwt-keys: ## (Re)generate JWT keypair (force overwrite).
