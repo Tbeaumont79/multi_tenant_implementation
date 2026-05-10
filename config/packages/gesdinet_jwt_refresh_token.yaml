@@ -1,0 +1,6 @@
+gesdinet_jwt_refresh_token:
+    refresh_token_class: App\Entity\Main\RefreshToken
+    ttl: 2592000           # 30 jours en secondes
+    ttl_update: false      # ne pas étendre la durée à chaque refresh
+    single_use: true       # un refresh_token usage unique : on en émet un nouveau à chaque /api/token/refresh
+    token_parameter_name: refresh_token
