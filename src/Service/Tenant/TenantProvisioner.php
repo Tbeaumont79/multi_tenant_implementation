@@ -9,30 +9,31 @@ use Hakam\MultiTenancyBundle\Enum\DatabaseStatusEnum;
 use Hakam\MultiTenancyBundle\Event\TenantCreatedEvent;
 use Hakam\MultiTenancyBundle\Port\TenantDatabaseManagerInterface;
 use Psr\EventDispatcher\EventDispatcherInterface;
+use RuntimeException;
 use Symfony\Component\HttpKernel\KernelInterface;
 use Symfony\Component\Process\Process;
 
 final class TenantProvisioner
 {
-
     public function __construct(
         private readonly TenantDatabaseManagerInterface $tenantDbManager,
         private readonly EventDispatcherInterface $eventDispatcher,
-        private readonly KernelInterface $kernel
-    ) {}
+        private readonly KernelInterface $kernel,
+    ) {
+    }
 
     public function provision(TenantDbConfig $config): void
     {
         $id = $config->getId();
         $dto = $this->tenantDbManager->getTenantDatabaseById($id);
 
-        if (in_array($dto->dbStatus, [DatabaseStatusEnum::DATABASE_CREATED, DatabaseStatusEnum::DATABASE_MIGRATED], true)) {
+        if (\in_array($dto->dbStatus, [DatabaseStatusEnum::DATABASE_CREATED, DatabaseStatusEnum::DATABASE_MIGRATED], true)) {
             return;
         }
 
         $created = $this->tenantDbManager->createTenantDatabase($dto);
         if (!$created) {
-            throw new \RuntimeException(sprintf('Failed to create tenant database %s', $dto->dbname));
+            throw new RuntimeException(\sprintf('Failed to create tenant database %s', $dto->dbname));
         }
 
         $this->tenantDbManager->updateTenantDatabaseStatus($id, DatabaseStatusEnum::DATABASE_CREATED);
@@ -52,11 +53,7 @@ final class TenantProvisioner
         $process->run();
 
         if (!$process->isSuccessful()) {
-            throw new \RuntimeException(sprintf(
-                'Tenant migration failed for db %s: %s',
-                $config->getDbName(),
-                $process->getErrorOutput() ?: $process->getOutput(),
-            ));
+            throw new RuntimeException(\sprintf('Tenant migration failed for db %s: %s', $config->getDbName(), $process->getErrorOutput() ?: $process->getOutput()));
         }
     }
 }

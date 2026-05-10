@@ -20,7 +20,8 @@ class DashboardController extends AbstractDashboardController
 {
     public function __construct(
         private readonly EntityManagerInterface $em,
-    ) {}
+    ) {
+    }
 
     public function index(): Response
     {
@@ -35,7 +36,7 @@ class DashboardController extends AbstractDashboardController
         // Admins : on filtre côté PHP car roles est un JSON array dans Postgres
         $adminCount = 0;
         foreach ($userRepo->findAll() as $u) {
-            if (in_array('ROLE_ADMIN', $u->getRoles(), true)) {
+            if (\in_array('ROLE_ADMIN', $u->getRoles(), true)) {
                 ++$adminCount;
             }
         }

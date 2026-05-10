@@ -22,7 +22,8 @@ final class ApiLoginRateLimitListener
     public function __construct(
         #[Autowire(service: 'limiter.api_login')]
         private readonly RateLimiterFactory $factory,
-    ) {}
+    ) {
+    }
 
     public function __invoke(RequestEvent $event): void
     {
@@ -31,7 +32,7 @@ final class ApiLoginRateLimitListener
         }
 
         $request = $event->getRequest();
-        if ($request->getPathInfo() !== '/api/login' || $request->getMethod() !== 'POST') {
+        if ('/api/login' !== $request->getPathInfo() || 'POST' !== $request->getMethod()) {
             return;
         }
 
@@ -41,10 +42,7 @@ final class ApiLoginRateLimitListener
         if (!$limit->isAccepted()) {
             $retryAfter = (int) max(1, $limit->getRetryAfter()->getTimestamp() - time());
 
-            throw new TooManyRequestsHttpException(
-                $retryAfter,
-                'Too many login attempts. Try again later.',
-            );
+            throw new TooManyRequestsHttpException($retryAfter, 'Too many login attempts. Try again later.');
         }
     }
 }

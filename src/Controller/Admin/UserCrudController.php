@@ -22,7 +22,8 @@ class UserCrudController extends AbstractCrudController
 {
     public function __construct(
         private readonly UserPasswordHasherInterface $passwordHasher,
-    ) {}
+    ) {
+    }
 
     public static function getEntityFqcn(): string
     {
@@ -39,8 +40,8 @@ class UserCrudController extends AbstractCrudController
                 ->setChoices(['User' => 'ROLE_USER', 'Admin' => 'ROLE_ADMIN']),
             TextField::new('password')
                 ->setFormType(PasswordType::class)
-                ->setRequired($pageName === Crud::PAGE_NEW)
-                ->setHelp($pageName === Crud::PAGE_EDIT ? 'Laisser vide pour ne pas changer.' : '')
+                ->setRequired(Crud::PAGE_NEW === $pageName)
+                ->setHelp(Crud::PAGE_EDIT === $pageName ? 'Laisser vide pour ne pas changer.' : '')
                 ->onlyOnForms(),
         ];
     }
@@ -60,7 +61,7 @@ class UserCrudController extends AbstractCrudController
     private function hashPasswordIfPresent(User $user): void
     {
         $plain = $user->getPassword();
-        if ($plain !== null && $plain !== '' && !str_starts_with($plain, '$2y$')) {
+        if (null !== $plain && '' !== $plain && !str_starts_with($plain, '$2y$')) {
             $user->setPassword($this->passwordHasher->hashPassword($user, $plain));
         }
     }

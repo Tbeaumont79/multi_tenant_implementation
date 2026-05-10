@@ -11,6 +11,7 @@ use App\Security\Voter\EstablishmentVoter;
 use App\Service\Tenant\TenantSwitcher;
 use Doctrine\ORM\EntityManagerInterface;
 use Hakam\MultiTenancyBundle\Doctrine\ORM\TenantEntityManager;
+use LogicException;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -60,7 +61,7 @@ class DashboardController extends AbstractController
 
         $this->switcher->switchTo(
             $user,
-            $activeCabinet->getTenantId() ?? throw new \LogicException('Active cabinet has no tenantId.'),
+            $activeCabinet->getTenantId() ?? throw new LogicException('Active cabinet has no tenantId.'),
         );
 
         $patients = $this->tenantEm
@@ -69,9 +70,9 @@ class DashboardController extends AbstractController
 
         // Bascule rapide : pointe vers le cabinet suivant dans la rotation.
         $nextCabinet = null;
-        if (count($cabinets) > 1) {
+        if (\count($cabinets) > 1) {
             $activeIndex = array_search($activeCabinet, $cabinets, true);
-            $nextIndex = (false === $activeIndex ? 0 : $activeIndex + 1) % count($cabinets);
+            $nextIndex = (false === $activeIndex ? 0 : $activeIndex + 1) % \count($cabinets);
             $nextCabinet = $cabinets[$nextIndex];
         }
 

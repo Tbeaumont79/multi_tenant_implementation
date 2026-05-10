@@ -17,8 +17,9 @@ final class EstablishmentProvisioningListener
     public function __construct(
         private readonly EntityManagerInterface $em,
         private readonly TenantProvisioner $provisioner,
-    ) {}
-    
+    ) {
+    }
+
     /**
      * @param AfterEntityPersistedEvent<object> $event
      */
@@ -29,12 +30,12 @@ final class EstablishmentProvisioningListener
             return;
         }
 
-        $dbName = 'cabinet' . $establishment->getTenantId();
+        $dbName = 'cabinet'.$establishment->getTenantId();
 
         // Idempotent : si TenantDbConfig existe déjà pour ce dbName, on skip
         $existing = $this->em->getRepository(TenantDbConfig::class)
             ->findOneBy(['dbName' => $dbName]);
-        if ($existing !== null) {
+        if (null !== $existing) {
             return;
         }
 

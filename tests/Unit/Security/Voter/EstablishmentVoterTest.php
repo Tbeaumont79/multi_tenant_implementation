@@ -9,6 +9,7 @@ use App\Entity\Main\User;
 use App\Security\Voter\EstablishmentVoter;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
+use stdClass;
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
 use Symfony\Component\Security\Core\Authorization\Voter\VoterInterface;
 
@@ -22,7 +23,7 @@ final class EstablishmentVoterTest extends TestCase
     }
 
     #[Test]
-    public function it_grants_when_user_is_member_of_establishment(): void
+    public function itGrantsWhenUserIsMemberOfEstablishment(): void
     {
         $user = new User();
         $establishment = new Establishment();
@@ -37,7 +38,7 @@ final class EstablishmentVoterTest extends TestCase
     }
 
     #[Test]
-    public function it_denies_when_user_is_not_member(): void
+    public function itDeniesWhenUserIsNotMember(): void
     {
         $user = new User();
         $establishment = new Establishment(); // pas ajouté à $user
@@ -51,7 +52,7 @@ final class EstablishmentVoterTest extends TestCase
     }
 
     #[Test]
-    public function it_denies_when_token_has_no_user(): void
+    public function itDeniesWhenTokenHasNoUser(): void
     {
         $establishment = new Establishment();
 
@@ -64,16 +65,16 @@ final class EstablishmentVoterTest extends TestCase
     }
 
     #[Test]
-    public function it_abstains_on_unsupported_subject(): void
+    public function itAbstainsOnUnsupportedSubject(): void
     {
         $token = $this->createStub(TokenInterface::class);
-        $result = $this->voter->vote($token, new \stdClass(), [EstablishmentVoter::SWITCH]);
+        $result = $this->voter->vote($token, new stdClass(), [EstablishmentVoter::SWITCH]);
 
         self::assertSame(VoterInterface::ACCESS_ABSTAIN, $result);
     }
 
     #[Test]
-    public function it_abstains_on_unsupported_attribute(): void
+    public function itAbstainsOnUnsupportedAttribute(): void
     {
         $establishment = new Establishment();
         $token = $this->createStub(TokenInterface::class);

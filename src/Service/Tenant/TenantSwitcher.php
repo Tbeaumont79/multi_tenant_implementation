@@ -10,6 +10,7 @@ use App\Entity\Main\User;
 use Doctrine\ORM\EntityManagerInterface;
 use Hakam\MultiTenancyBundle\Event\SwitchDbEvent;
 use Psr\EventDispatcher\EventDispatcherInterface;
+use RuntimeException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 final class TenantSwitcher
@@ -17,7 +18,8 @@ final class TenantSwitcher
     public function __construct(
         private readonly EntityManagerInterface $em,
         private readonly EventDispatcherInterface $events,
-    ) {}
+    ) {
+    }
 
     /**
      * Loads the Establishment for the given tenantId, asserts the user owns it,
@@ -29,18 +31,19 @@ final class TenantSwitcher
         $establishment = $this->em->getRepository(Establishment::class)
             ->findOneBy(['tenantId' => $tenantId]);
 
-        if ($establishment === null || !$user->getEstablishments()->contains($establishment)) {
+        if (null === $establishment || !$user->getEstablishments()->contains($establishment)) {
             throw new NotFoundHttpException('Cabinet not found or not accessible.');
         }
 
         $config = $this->em->getRepository(TenantDbConfig::class)
-            ->findOneBy(['dbName' => 'cabinet' . $tenantId]);
+            ->findOneBy(['dbName' => 'cabinet'.$tenantId]);
 
-        if ($config === null) {
-            throw new \RuntimeException(sprintf('No TenantDbConfig for tenantId %d', $tenantId));
+        if (null === $config) {
+            throw new RuntimeException(\sprintf('No TenantDbConfig for tenantId %d', $tenantId));
         }
 
         $this->events->dispatch(new SwitchDbEvent((string) $config->getId()));
+
         return $establishment;
     }
 }

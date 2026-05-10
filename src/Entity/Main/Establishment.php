@@ -7,18 +7,15 @@ namespace App\Entity\Main;
 use ApiPlatform\Metadata\ApiResource;
 use App\Repository\Main\EstablishmentRepository;
 use Doctrine\ORM\Mapping as ORM;
-use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Component\Serializer\Attribute\Groups;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: EstablishmentRepository::class)]
-#[
-    ApiResource(
-        security: "is_granted('ROLE_ADMIN')",
-        normalizationContext: ['groups' => ['establishment:read']],
-        denormalizationContext: ['groups' => ['establishment:write']],
-    ),
-]
-
+#[ApiResource(
+    security: "is_granted('ROLE_ADMIN')",
+    normalizationContext: ['groups' => ['establishment:read']],
+    denormalizationContext: ['groups' => ['establishment:write']],
+),]
 class Establishment
 {
     #[ORM\Id]

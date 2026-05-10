@@ -24,7 +24,8 @@ final class ApiTenantAuthorizationListener
         private readonly EntityManagerInterface $em,
         private readonly EventDispatcherInterface $events,
         private readonly Security $security,
-    ) {}
+    ) {
+    }
 
     public function __invoke(RequestEvent $event): void
     {
@@ -34,7 +35,7 @@ final class ApiTenantAuthorizationListener
 
         $resourceClass = $event->getRequest()->attributes->get('_api_resource_class');
         if (
-            !is_string($resourceClass)
+            !\is_string($resourceClass)
             || !is_subclass_of($resourceClass, TenantEntityInterface::class)
         ) {
             return;
@@ -53,7 +54,7 @@ final class ApiTenantAuthorizationListener
             throw new AccessDeniedHttpException('You are not authorized to access this resource');
         }
         $tenantDbConfig = $this->em->getRepository(TenantDbConfig::class)
-            ->findOneBy(['dbName' => 'cabinet' . $tenantId]);
+            ->findOneBy(['dbName' => 'cabinet'.$tenantId]);
         if (!$tenantDbConfig) {
             throw new BadRequestHttpException('Tenant DB config not found');
         }

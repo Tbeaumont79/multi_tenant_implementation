@@ -25,7 +25,8 @@ final class PatientController extends AbstractController
     public function __construct(
         private readonly TenantEntityManager $tenantEm,
         private readonly TenantSwitcher $switcher,
-    ) {}
+    ) {
+    }
 
     #[Route('/app/patients/new', name: 'app_patient_new', methods: ['GET', 'POST'])]
     public function new(Request $request): Response
@@ -40,7 +41,7 @@ final class PatientController extends AbstractController
             $this->tenantEm->persist($patient);
             $this->tenantEm->flush();
 
-            $this->addFlash('success', sprintf('Patient %s ajouté.', $patient->getFullName()));
+            $this->addFlash('success', \sprintf('Patient %s ajouté.', $patient->getFullName()));
 
             return $this->redirectToRoute('app_dashboard');
         }
@@ -57,7 +58,7 @@ final class PatientController extends AbstractController
         $activeCabinet = $this->resolveActiveCabinet($request);
 
         $patient = $this->tenantEm->find(Patient::class, $id);
-        if ($patient === null) {
+        if (null === $patient) {
             throw $this->createNotFoundException('Patient not found.');
         }
 
@@ -67,7 +68,7 @@ final class PatientController extends AbstractController
         if ($form->isSubmitted() && $form->isValid()) {
             $this->tenantEm->flush();
 
-            $this->addFlash('success', sprintf('Patient %s mis à jour.', $patient->getFullName()));
+            $this->addFlash('success', \sprintf('Patient %s mis à jour.', $patient->getFullName()));
 
             return $this->redirectToRoute('app_dashboard');
         }
@@ -89,7 +90,7 @@ final class PatientController extends AbstractController
         }
 
         $patient = $this->tenantEm->find(Patient::class, $id);
-        if ($patient === null) {
+        if (null === $patient) {
             throw $this->createNotFoundException('Patient not found.');
         }
 
@@ -97,7 +98,7 @@ final class PatientController extends AbstractController
         $this->tenantEm->remove($patient);
         $this->tenantEm->flush();
 
-        $this->addFlash('success', sprintf('Patient %s supprimé.', $name));
+        $this->addFlash('success', \sprintf('Patient %s supprimé.', $name));
 
         return $this->redirectToRoute('app_dashboard');
     }
@@ -108,7 +109,7 @@ final class PatientController extends AbstractController
         $user = $this->getUser();
 
         $tenantId = $request->getSession()->get(self::SESSION_CABINET_KEY);
-        if (!is_int($tenantId)) {
+        if (!\is_int($tenantId)) {
             throw new BadRequestHttpException('No active cabinet selected.');
         }
 
