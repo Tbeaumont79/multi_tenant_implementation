@@ -65,8 +65,11 @@ Lien : https://github.com/RamyHakam/multi_tenancy_bundle/pull/63
 
 Préalable : Postgres sur `127.0.0.1:5432` avec utilisateur `app` et mot de passe `app`. Soit via Docker (`make docker-up`), soit en local.
 
+> **Note** — Le fichier `.env` est volontairement versionné avec des valeurs renseignées (`APP_SECRET`, `JWT_PASSPHRASE`, credentials Postgres) pour rendre l'initialisation du projet immédiate en contexte démo : `git clone` puis `make install` puis `make db-reset` doivent suffire. En production, ces secrets seraient déplacés dans `.env.local` (gitignored).
+
 ```bash
 make install      # composer install plus génération de la paire de clés JWT
+make docker-up    # start docker postgres container
 make db-reset     # crée la base Main, applique les migrations, charge les fixtures, crée les bases tenant et leurs migrations, charge les fixtures tenant
 make serve        # démarre le serveur Symfony en arrière plan
 ```
